@@ -7,14 +7,13 @@ const app = express()
 app.use((request, response, next) => {
 
     response.header('Access-Control-Allow-Origin', '*')
-    response.header('Access-Control-Allow-Methods', 'GET, POST')
+    response.header('Access-Control-Allow-Methods', 'GET')
     app.use(cors)
-
     next()
 
 })
 
-app.get('/ACME filmes/filmes', async(request, response, next) => {
+app.get('/ACME-filmes/filmes', async(request, response, next) => {
 
     response.json(functions.listarFilmes())
     response.status(200)
