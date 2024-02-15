@@ -5,6 +5,13 @@
  * Versão 1.0
  ********************************************************************************************************/
 
+// Import da biblioteca do prisma client
+const {PrismaClient} = require('@prisma/client')
+
+// Instanciando a classe do prismaClient
+const prisma = new PrismaClient();
+
+
 // Função para inserir um filme no Banco de Dados
 const insertFilme = async function(){
 
@@ -22,7 +29,19 @@ const deleteFilme = async function(){
 
 // Função para retornar todos os filmes do Banco de Dados
 const selectAllFilmes = async function(){
+    let sql = 'select * from tbl_filme';
 
+    /**
+     * $queryRawlUnsafe()                     ---- Encaminha uma variável
+     * $queryRaw('select * from tbl_filme')   ---- Encaminha direto o script
+     */
+
+    let rsFilmes = await prisma.$queryRawUnsafe(sql);
+
+    if(rsFilmes.length > 0)
+        return rsFilmes;
+        else
+        return false
 }
 
 // Função para buscar um filme no Banco de Dados filtrando pelo ID

@@ -39,12 +39,35 @@ app.use((request, response, next) => {
 
 })
 
-app.get('/ACME-filmes/filmes', async(request, response, next) => {
+/******************************************** Import dos arquivos internos do projeto ******************************/
+
+const controllerFilmes = require('./controller/controller_filme.js')
+
+/***************************************************************************************************************** */
+
+// EndPoints: Retorna os dados do arquivo JSON
+app.get('/v1/ACME-filmes/filmes', async(request, response, next) => {
 
     response.json(functions.listarFilmes())
     response.status(200)
 })
 
-app.listen('8080', function(){
+// Endpoisnt: Retorna os dados do Banco de Dados
+app.get('/v2/ACME-Filmes/filmes', cors(), async function(request, response, next){
+
+    //Chama a função para retornar os dados de filme
+    let dadosFilmes = await controllerFilmes.getListarFilmes();
+
+    // Validação para retornar os dados ou o erro e quando não houver dados
+    if(dadosFilmes){
+        response.json(dadosFilmes);
+        response.status(200);
+    } else{
+        response.json({message: 'Nenhum registro encontrado'})
+        response.status(404)
+    }
+})
+
+app.listen('3030', function(){
     console.log('API FUNCIONANDO')
 })
