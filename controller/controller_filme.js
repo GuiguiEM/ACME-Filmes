@@ -5,6 +5,9 @@
  * Versão 1.0
  ********************************************************************************************************/
 
+// Import do arquivo de configuração do Projeto
+const message = require('../modulo/config.js')
+
 // Import do arquivo DAO para manipular dados dos filmes
 const filmesDAO = require('../model/DAO/filme')
 
@@ -47,7 +50,31 @@ const getListarFilmes = async function(){
 }
 
 // Função para retornar o filtro de um filme pelo ID
-const getBuscarFilme = async function(){
+const getBuscarFilme = async function(id){
+
+    let idFilme = id;
+    let filmeJSON = {};
+
+    if(idFilme == '' || idFilme == undefined || isNaN(idFilme)){
+        return message.ERROR_INVALID_ID;
+    }else{
+
+        let dadosFilme = await filmesDAO.selectByIdFilme(idFilme);
+
+        if(dadosFilme){
+            if(dadosFilme.length > 0){
+            filmeJSON.filme = dadosFilme;
+            filmeJSON.status_code = 200
+
+            return filmeJSON;
+        }else{
+            return message.ERROR_NOT_FOUND;
+        }
+        }else{
+            return message.ERROR_INTERNAL_SERVER_DB;
+        }
+    }
+
 
 }
 
