@@ -33,11 +33,14 @@ const app = express()
 app.use((request, response, next) => {
 
     response.header('Access-Control-Allow-Origin', '*')
-    response.header('Access-Control-Allow-Methods', 'GET')
+    response.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
     app.use(cors)
     next()
 
-})
+});
+
+//Cria um objeto para definir o tipo de dados que irá chegar no BODY (JSON)
+const bodyParserJSON = bodyParser.json();
 
 /******************************************** Import dos arquivos internos do projeto ******************************/
 
@@ -77,6 +80,16 @@ app.get('/v2/ACME-Filmes/filme/:id', cors(), async function(request, response, n
     response.status(dadosFilme.status_code);
     response.json(dadosFilme);
 
+})
+
+app.post('/v2/ACME-Filmes/filme', cors(), bodyParser.json(), async function(request, response, next){
+
+    let dadosBody = request.body;
+
+    let resultDados = await controllerFilmes.setInserirNovoFilme(dadosBody);
+
+    response.status(resultDados.status_code);
+    response.json(resultDados);
 })
 
 app.listen('3030', function(){
