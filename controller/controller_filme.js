@@ -12,53 +12,63 @@ const message = require('../modulo/config.js')
 const filmesDAO = require('../model/DAO/filme')
 
 // Função para inserir um novo filme
-const setInserirNovoFilme = async function(){
+const setInserirNovoFilme = async function(dadosFilme, contentType){
 
-    let statusValidated = false;
-    let novoFilmeJSON = {};
+    try{
 
-    if(dadosFilme.nome         == '' || dadosFilme.nome            == undefined || dadosFilme.nome            == null || dadosFilme.nome.length              > 80    ||    
-    dadosFilme.sinopse         == '' || dadosFilme.sinopse         == undefined || dadosFilme.sinopse         == null || dadosFilme.sinopse.length           > 65000 || 
-    dadosFilme.duracao         == '' || dadosFilme.duracao         == undefined || dadosFilme.duracao         == null || dadosFilme.duracao.length           > 8     ||    
-    dadosFilme.data_lancamento == '' || dadosFilme.data_lancamento == undefined || dadosFilme.data_lancamento == null || dadosFilme.data_lancamento.length   != 10   ||  
-    dadosFilme.foto_capa       == '' || dadosFilme.foto_capa       == undefined || dadosFilme.foto_capa       == null || dadosFilme.foto_capa.length         != 200  ||  
-    dadosFilme.valor_unitario.length > 8 || isNaN(dadosFilme.valor_unitario)
-    ){
-        return message.ERROR_REQUIRED_FILDS; //400
-    }else{
+        if(String(contentType).toLowerCase() == 'application/json'){
 
-        //Validação para verificar se a data de relançamento tem um conteúdo válido
-        if(dadosFilme.data_relancamento != ''      &&
-        dadosFilme.data_relancamento    != null    &&
-        dadosFilme.data_relancamento    != undefined)
-        {
-            //verifica a quantidade de caracter
-            if(dadosFilme.data_relancamento.length != 10){
-                return message.ERROR_REQUIRED_FILDS //400
+        let statusValidated = false;
+        let novoFilmeJSON = {};
+
+            if(dadoFilme.nome         == '' || dadosFilme.nome            == undefined || dadosFilme.nome            == null || dadosFilme.nome.length              > 80    ||    
+            dadosFilme.sinopse         == '' || dadosFilme.sinopse         == undefined || dadosFilme.sinopse         == null || dadosFilme.sinopse.length           > 65000 || 
+            dadosFilme.duracao         == '' || dadosFilme.duracao         == undefined || dadosFilme.duracao         == null || dadosFilme.duracao.length           > 8     ||    
+            dadosFilme.data_lancamento == '' || dadosFilme.data_lancamento == undefined || dadosFilme.data_lancamento == null || dadosFilme.data_lancamento.length   != 10   ||  
+            dadosFilme.foto_capa       == '' || dadosFilme.foto_capa       == undefined || dadosFilme.foto_capa       == null || dadosFilme.foto_capa.length         != 200  ||  
+            dadosFilme.valor_unitario.length > 8 || isNaN(dadosFilme.valor_unitario)
+            ){
+                return message.ERROR_REQUIRED_FILDS; //400
             }else{
-                statusValidated = true; //validação para a inserção dos dados no DAO
+
+                //Validação para verificar se a data de relançamento tem um conteúdo válido
+                if(dadosFilme.data_relancamento != ''      &&
+                dadosFilme.data_relancamento    != null    &&
+                dadosFilme.data_relancamento    != undefined)
+                {
+                    //verifica a quantidade de caracter
+                    if(dadosFilme.data_relancamento.length != 10){
+                        return message.ERROR_REQUIRED_FILDS //400
+                    }else{
+                        statusValidated = true; //validação para a inserção dos dados no DAO
+                    }
+                }else{
+                    statusValidated = true; //validação para a inserção dos dados no DAO
+                }
+                //Se a variavelfor verdadeira, podemos encaminhar os dados para o DAO
+                if(statusValidated){
+
+                    //Encaminha os dados para DAO inserir
+                    let novoFilme = await filmesDAO.insertFilme(dadosFilme);
+
+                    if(novoFilme){
+                        //Cria o JSON de retorno com informações de requisição e os dados novos
+                        novoFilmeJSON.status = message.SUCCESS_CREATED_ITEM.status;
+                        novoFilmeJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code;
+                        novoFilmeJSON.message = message.SUCCESS_CREATED_ITEM.message;
+                        novoFilmeJSON = dadosFilme;
+
+                        return novoFilmeJSON; //201
+                    }else{
+                        return message.ERROR_INTERNAL_SERVER_DB; //500
+                    }
+                }
             }
         }else{
-            statusValidated = true; //validação para a inserção dos dados no DAO
+            return message.ERROR_CONTENT_TYPE; //415 erro de content-type incorreto
         }
-        //Se a variavelfor verdadeira, podemos encaminhar os dados para o DAO
-        if(statusValidated){
-
-            //Encaminha os dados para DAO inserir
-            let novoFilme = await filmesDAO.insertFilme(dadosFilme);
-
-            if(novoFilme){
-                //Cria o JSON de retorno com informações de requisição e os dados novos
-                novoFilmeJSON.status = message.SUCCESS_CREATED_ITEM.status;
-                novoFilmeJSON.status_code = message.SUCCESS_CREATED_ITEM.status_code;
-                novoFilmeJSON.message = message.SUCCESS_CREATED_ITEM.message;
-                novoFilmeJSON = dadosFilme;
-
-                return novoFilmeJSON; //201
-            }else{
-                return message.ERROR_INTERNAL_SERVER_DB; //500
-            }
-        }
+    }catch(error){
+        return message.ERROR_INTERNAL_SERVER;
     }
 }
 
@@ -120,8 +130,6 @@ const getBuscarFilme = async function(id){
             return message.ERROR_INTERNAL_SERVER_DB;
         }
     }
-
-
 }
 
 module.exports = {

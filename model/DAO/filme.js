@@ -26,7 +26,7 @@ const insertFilme = async function(dadosFilme){
     dadosFilme.data_relancamento == ''
     ){
         //Script SQL com valor null para a data
-    sql = `insert into tbm_filme (nome,
+    sql = `insert into tbl_filme (nome,
                                       sinopse,
                                       duracao,
                                       data_lancamento,
@@ -38,7 +38,6 @@ const insertFilme = async function(dadosFilme){
                                         '${dadosFilme.sinopse}',
                                         '${dadosFilme.duracao}',
                                         '${dadosFilme.data_lancamento}',
-                                        '${dadosFilme.data_relancamento}',
                                         null,
                                         '${dadosFilme.foto_capa}',
                                         '${dadosFilme.valor_unitario}'
@@ -46,7 +45,7 @@ const insertFilme = async function(dadosFilme){
                                  )`
     }else{
         //Script 
-        sql = `insert into tbm_filme ( nome,
+        sql = `insert into tbl_filme ( nome,
                                         sinopse,
                                         duracao,
                                         data_lancamento,
@@ -58,7 +57,7 @@ const insertFilme = async function(dadosFilme){
                                         '${dadosFilme.sinopse}',
                                         '${dadosFilme.duracao}',
                                         '${dadosFilme.data_lancamento}',
-                                        '${dadosFilme.data_relancamento}',
+                                        null,
                                         '${dadosFilme.foto_capa}',
                                         '${dadosFilme.valor_unitario}'
                                         )
