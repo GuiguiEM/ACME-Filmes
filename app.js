@@ -96,6 +96,20 @@ app.post('/v2/ACME-Filmes/filme', cors(), bodyParser.json(), async function(requ
     response.json(resultDados);
 })
 
+app.put('/v2/ACME-Filmes//uptadeFilme/:id', cors(), bodyParser.json(), async function(request, response, next){
+
+    let idFilme = request.params.id
+    let contentType = request.headers['content-type'];
+    let dadosBody = request.body;
+
+    console.log(contentType)
+
+    let resultDados = await controllerFilmes.setAtualizarFilme(idFilme ,dadosBody, contentType);
+
+    response.status(resultDados.status_code);
+    response.json(resultDados);
+})
+
 app.listen('3030', function(){
     console.log('API FUNCIONANDO')
 })

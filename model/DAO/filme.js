@@ -6,27 +6,27 @@
  ********************************************************************************************************/
 
 // Import da biblioteca do prisma client
-const {PrismaClient} = require('@prisma/client')
+const { PrismaClient } = require('@prisma/client')
 
 // Instanciando a classe do prismaClient
 const prisma = new PrismaClient();
 
 
 // Função para inserir um filme no Banco de Dados
-const insertFilme = async function(dadosFilme){
-    
-    try {
-    //Cria a variavel SQL
-    let sql;
+const insertFilme = async function (id, dadosFilme) {
 
-    //Validação para verificar se a data de relançamento é vazia, pois devemos ajustar o script SQL para o BD --- 
-    //OBS: essa condiçao é provisória, já que iremos tratar no BD com uma procedure
-    if(dadosFilme.data_relancamento == null ||
-    dadosFilme.data_relancamento == undefined ||
-    dadosFilme.data_relancamento == ''
-    ){
-        //Script SQL com valor null para a data
-    sql = `insert into tbl_filme (nome,
+    try {
+        //Cria a variavel SQL
+        let sql;
+
+        //Validação para verificar se a data de relançamento é vazia, pois devemos ajustar o script SQL para o BD --- 
+        //OBS: essa condiçao é provisória, já que iremos tratar no BD com uma procedure
+        if (dadosFilme.data_relancamento == null ||
+            dadosFilme.data_relancamento == undefined ||
+            dadosFilme.data_relancamento == ''
+        ) {
+            //Script SQL com valor null para a data
+            sql = `UPDATE tbl_filme (nome,
                                       sinopse,
                                       duracao,
                                       data_lancamento,
@@ -41,11 +41,12 @@ const insertFilme = async function(dadosFilme){
                                         null,
                                         '${dadosFilme.foto_capa}',
                                         '${dadosFilme.valor_unitario}'
+                                        'where tbl_filme.id = ${id}'
                                       )
                                  )`
-    }else{
-        //Script 
-        sql = `insert into tbl_filme ( nome,
+        } else {
+            //Script 
+            sql = `UPDATE tbl_filme ( nome,
                                         sinopse,
                                         duracao,
                                         data_lancamento,
@@ -60,35 +61,77 @@ const insertFilme = async function(dadosFilme){
                                         null,
                                         '${dadosFilme.foto_capa}',
                                         '${dadosFilme.valor_unitario}'
+                                        'where tbl_filme.id = ${id}'
                                         )
        )`
-    }
+        }
 
-    //$executeRawUnsafe() - Serve para executar scripts SQL que não retornam valores (Insert, Update e Delete)
-    //$queryRawUnsafe() - Serve para executar scripts SQL que RETORNAM dados do BD (select)
-    let result = await prisma.$executeRawUnsafe(sql);
+        //$executeRawUnsafe() - Serve para executar scripts SQL que não retornam valores (Insert, Update e Delete)
+        //$queryRawUnsafe() - Serve para executar scripts SQL que RETORNAM dados do BD (select)
+        let result = await prisma.$executeRawUnsafe(sql);
 
-    if(result)
-        return true;
-    else
-        return false;
-    }catch(error){
+        if (result)
+            return true;
+        else
+            return false;
+    } catch (error) {
         return false;
     }
 }
 
 // Função para atualizar um filme no Banco de Dados
-const updateFilme = async function(){
+const updateFilme = async function () {
 
+    try {
+
+        let sql;
+
+        if (dadosFilme.data_relancamento != '' &&
+            dadosFilme.data_relancamento != null &&
+            dadosFilme.data_relancamento != undefined
+        ) {
+
+            sql = `UPDATE tbl_filme SET nome = ${dadosFilme.nome},
+                sinopse = '${dadosFilme.sinopse}',
+                duracao = '${dadosFilme.duracao}',
+                data_lancamento = '${dadosFilme.data_lancamento}',
+                data_relancamento = '${dadosFilme.data_relancamento}',
+                foto_capa = '${dadosFilme.foto_capa}',
+                valor_unitario  = '${dadosFilme.valor_unitario}' 
+                where tbl_filme.id = ${id}; `
+        } else {
+            sql = `UPDATE tbl_filme SET  nome = '${dadosFilme.nome}',
+                sinopse = '${dadosFilme.sinopse}',
+                duracao = '${dadosFilme.duracao}',
+                data_lancamento = '${dadosFilme.data_lancamento}',
+                data_relancamento = null ,
+                foto_capa = '${dadosFilme.foto_capa}',
+                valor_unitario  = '${dadosFilme.valor_unitario}' 
+                 where tbl_filme.id = ${id}; `
+        }
+
+        let result = await prisma.$executeRawUnsafe(sql);
+
+        if (result)
+            return true
+        else
+            return false;
+
+    } catch (error) {
+
+
+        return false
+
+    }
 }
 
 // Função para excluir um filme no Banco de Dados
-const deleteFilme = async function(){
+const deleteFilme = async function () {
 
 }
 
 // Função para retornar todos os filmes do Banco de Dados
-const selectAllFilmes = async function(){
+const selectAllFilmes = async function () {
     let sql = 'select * from tbl_filme';
 
     /**
@@ -98,26 +141,26 @@ const selectAllFilmes = async function(){
 
     let rsFilmes = await prisma.$queryRawUnsafe(sql);
 
-    if(rsFilmes.length > 0)
+    if (rsFilmes.length > 0)
         return rsFilmes;
-        else
+    else
         return false
 }
 
 // Função para buscar um filme no Banco de Dados filtrando pelo ID
-const selectByIdFilme = async function(id){
+const selectByIdFilme = async function (id) {
 
-    try{
+    try {
         let sql = `select * from tbl_filme where id = ${id}`;
 
         let rsFilme = await prisma.$queryRawUnsafe(sql);
 
         return rsFilme;
 
-    } catch(error){
+    } catch (error) {
         return false;
     }
-    
+
 }
 
 module.exports = {
