@@ -45,6 +45,7 @@ const bodyParserJSON = bodyParser.json();
 /******************************************** Import dos arquivos internos do projeto ******************************/
 
 const controllerFilmes = require('./controller/controller_filme.js')
+const controllerGeneros = require('./controller/controller_genero.js')
 
 /***************************************************************************************************************** */
 
@@ -71,45 +72,57 @@ app.get('/v2/ACME-Filmes/filmes', cors(), async function(request, response, next
     }
 })
 
-app.get('/v2/ACME-Filmes/filme/:id', cors(), async function(request, response, next){
-
-    let idFilme = request.params.id;
-
-    let dadosFilme = await controllerFilmes.getBuscarFilme(idFilme);
-
-    response.status(dadosFilme.status_code);
-    response.json(dadosFilme);
-
-})
-
 app.post('/v2/ACME-Filmes/filme', cors(), bodyParser.json(), async function(request, response, next){
 
-    let contentType = request.headers['content-type'];
+    let contentType = request.headers['content-type']
 
-    console.log(contentType)
-    
-    let dadosBody = request.body;
+    let dadosBody = request.body
 
-    let resultDados = await controllerFilmes.setInserirNovoFilme(dadosBody, contentType);
+    let resultDados = await controllerFilmes.setInserirNovoFilme(dadosBody, contentType)
 
-    response.status(resultDados.status_code);
-    response.json(resultDados);
+    response.status(resultDados.status_code)
+    response.json(resultDados)
+
 })
 
-app.put('/v2/ACME-Filmes//uptadeFilme/:id', cors(), bodyParser.json(), async function(request, response, next){
-
+app.delete('/v2/ACME-Filmes/deleteFilme/:id',  cors(), bodyParserJSON, async (request, response, next) => {
+   
     let idFilme = request.params.id
-    let contentType = request.headers['content-type'];
-    let dadosBody = request.body;
+    let dadosFilme = await controllerFilmes.setExcluirFilme(idFilme)
 
-    console.log(contentType)
-
-    let resultDados = await controllerFilmes.setAtualizarFilme(idFilme ,dadosBody, contentType);
-
-    response.status(resultDados.status_code);
-    response.json(resultDados);
+    response.status(dadosFilme.status_code)
+    response.json(dadosFilme)
 })
 
-app.listen('3030', function(){
+
+app.put('/v2/ACME-Filmes/updateFilme/:id', cors(), bodyParser.json(), async function(request, response, next){
+
+    const id = request.params.id
+
+    let contentType = request.headers['content-type']
+    let novosDados = request.body
+
+    let resultDados = await controllerFilmes.setAtualizarFilme(id, novosDados, contentType)
+
+    response.status(resultDados.status_code)
+    response.json(resultDados)
+})
+
+/************************************************************************************* */
+
+app.get('/v2/ACME-Filmes/getGeneros', cors(), async function(request, response, next){
+
+    let dadosGenero = await controllerGeneros.getListarGeneros();
+
+    if(dadosGenero){
+        response.json(dadosGenero);
+        response.status(200);
+    }else{
+        response.json({message: 'Nenhum registro encontrado'})
+        response.status(404)
+    }
+})
+
+app.listen('8080', function(){
     console.log('API FUNCIONANDO')
 })

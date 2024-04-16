@@ -13,120 +13,125 @@ const prisma = new PrismaClient();
 
 
 // Função para inserir um filme no Banco de Dados
-const insertFilme = async function (id, dadosFilme) {
+const insertFilme = async function(dadosFilme) {
+    console.log('oi1')
 
     try {
-        //Cria a variavel SQL
-        let sql;
+        let sql
 
-        //Validação para verificar se a data de relançamento é vazia, pois devemos ajustar o script SQL para o BD --- 
-        //OBS: essa condiçao é provisória, já que iremos tratar no BD com uma procedure
         if (dadosFilme.data_relancamento == null ||
             dadosFilme.data_relancamento == undefined ||
-            dadosFilme.data_relancamento == ''
-        ) {
-            //Script SQL com valor null para a data
-            sql = `UPDATE tbl_filme (nome,
-                                      sinopse,
-                                      duracao,
-                                      data_lancamento,
-                                      data_relancamento,
-                                      foto_capa,
-                                      valor_unitario
-                                      ) values (
-                                        '${dadosFilme.nome}',
-                                        '${dadosFilme.sinopse}',
-                                        '${dadosFilme.duracao}',
-                                        '${dadosFilme.data_lancamento}',
-                                        null,
-                                        '${dadosFilme.foto_capa}',
-                                        '${dadosFilme.valor_unitario}'
-                                        'where tbl_filme.id = ${id}'
-                                      )
-                                 )`
-        } else {
-            //Script 
-            sql = `UPDATE tbl_filme ( nome,
+            dadosFilme.data_relancamento == '') {
+            console.log('oi1')
+            sql = `insert into tbl_filme (nome, 
                                         sinopse,
                                         duracao,
                                         data_lancamento,
                                         data_relancamento,
                                         foto_capa,
                                         valor_unitario
-                                        ) values (
-                                        '${dadosFilme.nome}',
-                                        '${dadosFilme.sinopse}',
-                                        '${dadosFilme.duracao}',
-                                        '${dadosFilme.data_lancamento}',
-                                        null,
-                                        '${dadosFilme.foto_capa}',
-                                        '${dadosFilme.valor_unitario}'
-                                        'where tbl_filme.id = ${id}'
-                                        )
-       )`
-        }
-
-        //$executeRawUnsafe() - Serve para executar scripts SQL que não retornam valores (Insert, Update e Delete)
-        //$queryRawUnsafe() - Serve para executar scripts SQL que RETORNAM dados do BD (select)
-        let result = await prisma.$executeRawUnsafe(sql);
-
-        if (result)
-            return true;
-        else
-            return false;
-    } catch (error) {
-        return false;
-    }
-}
-
-// Função para atualizar um filme no Banco de Dados
-const updateFilme = async function () {
-
-    try {
-
-        let sql;
-
-        if (dadosFilme.data_relancamento != '' &&
-            dadosFilme.data_relancamento != null &&
-            dadosFilme.data_relancamento != undefined
-        ) {
-
-            sql = `UPDATE tbl_filme SET nome = ${dadosFilme.nome},
-                sinopse = '${dadosFilme.sinopse}',
-                duracao = '${dadosFilme.duracao}',
-                data_lancamento = '${dadosFilme.data_lancamento}',
-                data_relancamento = '${dadosFilme.data_relancamento}',
-                foto_capa = '${dadosFilme.foto_capa}',
-                valor_unitario  = '${dadosFilme.valor_unitario}' 
-                where tbl_filme.id = ${id}; `
+        ) values(
+            '${dadosFilme.nome}',
+            '${dadosFilme.sinopse}',
+            '${dadosFilme.duracao}',
+            '${dadosFilme.data_lancamento}',
+            null,
+            '${dadosFilme.foto_capa}',
+            '${dadosFilme.valor_unitario}'
+        )`
         } else {
-            sql = `UPDATE tbl_filme SET  nome = '${dadosFilme.nome}',
-                sinopse = '${dadosFilme.sinopse}',
-                duracao = '${dadosFilme.duracao}',
-                data_lancamento = '${dadosFilme.data_lancamento}',
-                data_relancamento = null ,
-                foto_capa = '${dadosFilme.foto_capa}',
-                valor_unitario  = '${dadosFilme.valor_unitario}' 
-                 where tbl_filme.id = ${id}; `
+            console.log('oi2')
+            sql = `insert into tbl_filme (nome, 
+                                          sinopse,
+                                          duracao,
+                                          data_lancamento,
+                                          data_relancamento,
+                                          foto_capa,
+                                          valor_unitario
+                                    ) values(
+                                    '${dadosFilme.nome}',
+                                    '${dadosFilme.sinopse}',
+                                    '${dadosFilme.duracao}',
+                                    '${dadosFilme.data_lancamento}',
+                                    '${dadosFilme.data_relancamento}',
+                                    '${dadosFilme.foto_capa}',
+                                    '${dadosFilme.valor_unitario}'
+                                    )`
         }
 
-        let result = await prisma.$executeRawUnsafe(sql);
+        console.log(sql)
+        let result = await prisma.$executeRawUnsafe(sql)
 
         if (result)
             return true
         else
-            return false;
+            return false
 
     } catch (error) {
-
-
         return false
+    }
 
+}
+
+// Função para atualizar um filme no Banco de Dados
+const updateFilme = async function (id, dadosFilme) {
+
+    try{
+
+        let sql
+
+        if (dadosFilme.data_relancamento != '' &&
+        dadosFilme.data_relancamento != null &&
+        dadosFilme.data_relancamento != undefined
+    ){
+
+            sql = `UPDATE tbl_filme SET 
+            nome = "${dadosFilme.nome}",
+            sinopse = "${dadosFilme.sinopse}",
+            duracao = '${dadosFilme.duracao}',
+            data_lancamento = '${dadosFilme.data_lancamento}',
+            data_relancamento = '${dadosFilme.data_relancamento}',
+            foto_capa = '${dadosFilme.foto_capa}',
+            valor_unitario = '${dadosFilme.valor_unitario}'
+            WHERE id = ${id}`
+    } else {
+        sql = `UPDATE tbl_filme SET 
+        nome = "${dadosFilme.nome}",
+        sinopse = "${dadosFilme.sinopse}",
+        duracao = '${dadosFilme.duracao}',
+        data_lancamento = '${dadosFilme.data_lancamento}',
+        foto_capa = '${dadosFilme.foto_capa}',
+        valor_unitario = '${dadosFilme.valor_unitario}'
+        WHERE id = ${id}`
+    }
+
+    console.log(sql)
+    
+        let result = await prisma.$executeRawUnsafe(sql)
+
+        if(result) {
+            return true
+        } else {
+            return false
+        }
+    } catch (error){
+        return false
     }
 }
 
 // Função para excluir um filme no Banco de Dados
-const deleteFilme = async function () {
+const deleteFilme = async (id) => {
+
+    try {
+        let sql = `delete from tbl_filme where id = ${id}`
+
+        let rsFilmes = await prisma.$queryRawUnsafe(sql)
+
+        return rsFilmes
+
+    } catch (error) {
+        return false
+    }
 
 }
 
