@@ -19,7 +19,7 @@ const insertGenero = async function(dadosGenero){
 
         sql = `insert into tbl_genero (nome
         )values(
-            nome = '${dadosGenero.nome}'
+            '${dadosGenero.nome}'
         )`
 
         console.log(sql)

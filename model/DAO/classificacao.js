@@ -22,13 +22,12 @@ const insertClassificacao = async function(dadosClassificacao){
                                             caracteristica,
                                             icone
         )values(
-                                            faixa_etaria = '${dadosClassificacao.faixa_etaria}',
-                                            classificacao = '${dadosClassificacao.classificacao}',
-                                            caracteristica = '${dadosClassificacao.caracteristica}',
-                                            icone = '${dadosClassificacao.icone}'
+                                            '${dadosClassificacao.faixa_etaria}',
+                                            '${dadosClassificacao.classificacao}',
+                                            '${dadosClassificacao.caracteristica}',
+                                            '${dadosClassificacao.icone}'
         )`
 
-        console.log(dadosClassificacao)
         let result = await prisma.$executeRawUnsafe(sql)
 
         if(result){
