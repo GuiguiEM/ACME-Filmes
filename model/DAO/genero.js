@@ -11,18 +11,71 @@ const { PrismaClient } = require('@prisma/client')
 // Instanciando a classe do prismaClient
 const prisma = new PrismaClient();
 
-// const updateGenero = async function (id, dadosGenero){
+const insertGenero = async function(dadosGenero){
 
-//     try{
+    try{
 
-//         let sql
-// if{
-//         sql = `UPDATE tbl_genero SET
-//         nome = "${dadosGenero.nome}"
-//         where id = ${id}`
-// }
+        let sql
+
+        sql = `insert into tbl_genero (nome
+        )values(
+            nome = '${dadosGenero.nome}'
+        )`
+
+        console.log(sql)
+        let result = await prisma.$executeRawUnsafe(sql)
+
+        if(result){
+            return true
+        }else{
+            return false
+        }
+    }catch(error){
+        return false
+    }
+}
+
+const updateGenero = async function(id, dadosGenero){
+
+    try{
+
+        let sql
+
+        sql = `update tbl_genero set 
+        nome = "${dadosGenero.nome}"
+        where id = ${id}`
+
+        let result = await prisma.$executeRawUnsafe(sql)
+
+        if(result){
+            return true
+        }else{
+            return false
+        }
+    }catch(error){
+        return false
+    }
+
+}
+
+const deleteGenero = async function(id){
+
+    try{
+
+        let sql = `delete from tbl_genero where id = ${id}`;
+
+        let rsGenero = await prisma.$queryRawUnsafe(sql);
+
+        return rsGenero;
+
+    }catch(error) {
+        return false;
+    }
+
+}
 
 const selectAllGeneros = async function(){
+    
     let sql = 'select * from tbl_genero';
 
     /**
@@ -30,14 +83,31 @@ const selectAllGeneros = async function(){
      * $queryRaw('select * from tbl_filme')   ---- Encaminha direto o script
      */
 
-    let rsGeneros = await prisma.$queryRawUnsafe(sql);
+    let rsGenero = await prisma.$queryRawUnsafe(sql);
 
-    if(rsGeneros.length > 0)
-        return rsGeneros;
+    if(rsGenero.length > 0)
+        return rsGenero;
     else
         return false
 }
 
+const selectByIdGenero = async function(id){
+    try{
+        let sql = `select * from tbl_genero where id = ${id}`;
+
+        let rsGenero = await prisma.$queryRawUnsafe(sql);
+
+        return rsGenero;
+
+    }catch(error) {
+        return false;
+    }
+}
+
 module.exports = {
-    selectAllGeneros
+    insertGenero,
+    updateGenero,
+    selectAllGeneros,
+    selectByIdGenero,
+    deleteGenero
 }

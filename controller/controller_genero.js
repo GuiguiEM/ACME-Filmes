@@ -13,58 +13,159 @@ const generosDAO = require('../model/DAO/genero')
 
 const setInserirNovoGenero = async function(dadosGenero, content) {
 
+    try{
+        if(String(content).toLowerCase() == 'application/json'){
+
+            let statusValidate = false
+            let novoGeneroJson = {}
+
+            if(dadosGenero.nome == '' || dadosGenero.nome == undefined || dadosGenero.nome == null || dadosGenero.nome.length > 50){
+                return message.ERROR_REQUIRED_FIELDS
+            }else{
+                statusValidate = true
+            }
+            if(statusValidate){
+
+                let novoGenero = await generosDAO.insertGenero(dadosGenero)
+
+                console.log(novoGenero)
+                if(novoGenero){
+
+                    novoGeneroJson.status = message.SUCCESS_CREATED_ITEM.status
+                    novoGeneroJson.status_code = message.SUCCESS_CREATED_ITEM.status_code
+                    novoGeneroJson.message = message.SUCCESS_CREATED_ITEM.message
+                    novoGeneroJson.genero = dadosGenero
+
+                    return novoGeneroJson
+                }else{
+                    return message.ERROR_INTERNAL_SERVER_DB
+                }
+            }
+        }else{
+            return message.ERROR_CONTENT_TYPE
+        }
+    }catch(error) {
+        console.log(error)
+        return message.ERROR_INTERNAL_SERVER
+    }
 }
 
-const setAtualizarGenero = async function(id, novosDados, content) {
+const setAtualizarGenero = async function(id, dadosGenero, content) {
 
     try{
 
-        if(!novosDados.nome || novosDados.nome === '' || novosDados.nome.length > 20
-        ){
-            return message.ERROR_REQUIRED_FIELDS
-        }
+        if(String(content).toLowerCase() == 'application/json'){
 
-        const idGenero = id
-        const generoAtualizado = await generosDAO.updateGenero(idGenero, novosDados)
+            let statusValidate = false
+            let generoAtualizadoJson = {}
 
-        if(generoAtualizado){
-            let novoGeneroJson = {
-                status: message.SUCCESS_UPDATED_ITEM .status,
-                status_code: message.SUCCESS_UPDATED_ITEM.status_code,
-                message: message.SUCCESS_UPDATED_ITEM.message,
-                idGeneroAtualizado: idGenero,
-                genero: novosDados
+            if(dadosGenero.nome == '' || dadosGenero.nome == undefined || dadosGenero.nome == null || dadosGenero.nome.length > 50){
+                return message.ERROR_REQUIRED_FIELDS
+            }else{
+                statusValidate = true
             }
-            return novoGeneroJson
+            if(statusValidate){
+                
+                let idGenero = id
+                let generoAtualizado = await generosDAO.updateGenero(idGenero, dadosGenero)
+
+                console.log(generoAtualizado)
+                if(generoAtualizado){
+                    
+                    generoAtualizadoJson.status = message.SUCCESS_UPDATED_ITEM.status,
+                    generoAtualizadoJson.status_code = message.SUCCESS_UPDATED_ITEM.status_code,
+                    generoAtualizadoJson.message = message.SUCCESS_UPDATED_ITEM.message,
+                    generoAtualizadoJson.idGeneroAtualizado = idGenero,
+                    novoGeneroJson = dadosGenero
+
+                    return generoAtualizadoJson
+                }else{
+                    return message.ERROR_INTERNAL_SERVER_DB
+                }
+            }
         }else{
-            return message.ERROR_INTERNAL_SERVER_DB
+            return message.ERROR_CONTENT_TYPE
         }
-    } catch(error){
-        return message.ERROR_UPDATE_ITEM
+    }catch(error){
+        console.log(error)
+        return message.ERROR_INTERNAL_SERVER
     }
 }
 
 const setExcluirGenero = async function(id){
+    
+    try{
 
+        let idGenero = id;
+
+        let validaGenero = await getBuscarGenero(idGenero);
+
+        let dadosGenero = await generosDAO.deleteGenero(idGenero);
+
+        if(idGenero == '' || idGenero == undefined || isNaN(idGenero)){
+            return message.ERROR_INVALID_ID
+
+        } else if(validaGenero.status == false){
+            return message.ERROR_NOT_FOUND
+
+        }else{
+            if(dadosGenero)
+            return message.SUCCESS_DELETED_ITEM
+        else
+            return message.ERROR_INTERNAL_SERVER_DB
+        }
+    }catch(error) {
+        return message.ERROR_INTERNAL_SERVER
+    }
 }
 
 const getListarGeneros = async function(){
 
-    let generosJSON = {};
+    let generoJSON = {};
     let dadosGeneros = await generosDAO.selectAllGeneros();
 
     if (dadosGeneros){
-        generosJSON.generos = dadosGeneros;
-        generosJSON.quantidade = dadosGeneros.length;
-        generosJSON.status_code = 200;
+        generoJSON.generos = dadosGeneros;
+        generoJSON.quantidade = dadosGeneros.length;
+        generoJSON.status_code = 200;
 
-        return generosJSON;
+        return generoJSON;
     }else{
         return false;
     }
 }
 
+const getBuscarGenero = async function(id){
+
+    let idGenero = id;
+    let generoJSON = {};
+
+    if (idGenero == '' || idGenero == undefined || isNaN(idGenero)){
+        return message.ERROR_INVALID_ID;
+    } else {
+
+        let dadosGenero = await generosDAO.selectByIdGenero(idGenero);
+
+        if(dadosGenero){
+            if (dadosGenero.length > 0){
+                generoJSON.genero = dadosGenero;
+                generoJSON.status_code = 200
+
+                return generoJSON;
+            } else {
+                return message.ERROR_NOT_FOUND;
+            }
+        } else {
+            return message.ERROR_INTERNAL_SERVER_DB;
+        }
+    }
+}
+
 module.exports = {
-    getListarGeneros
+    setInserirNovoGenero,
+    setAtualizarGenero,
+    getListarGeneros,
+    getBuscarGenero,
+    setExcluirGenero
 }
 
