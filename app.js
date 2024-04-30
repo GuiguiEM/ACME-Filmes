@@ -47,6 +47,7 @@ const bodyParserJSON = bodyParser.json();
 const controllerFilmes = require('./controller/controller_filme.js')
 const controllerGeneros = require('./controller/controller_genero.js')
 const controllerClassificacao = require('./controller/controller_classificacao.js')
+const controllerDiretor = require('./controller/controller_diretor.js')
 
 /***************************************************************************************************************** */
 
@@ -227,6 +228,55 @@ app.put('/v2/ACME-Filmes/updateClassificacao/:id', cors(), bodyParser.json(), as
 
     response.status(resultDados.status_code)
     response.json(resultDados)
+})
+
+/********************************************************************************************************************** */
+
+app.get('/v2/ACME-Filmes/getDiretor', cors(), async function(request, response, next){
+
+    let dadosDiretores = await controllerDiretor.getListarDiretores();
+
+    if(dadosDiretores){
+        response.json(dadosDiretores);
+        response.status(200);
+    }else{
+        response.json({message: 'Nenhum registro encontrado'})
+        response.status(404)
+    }
+})
+
+app.get('/v2/ACME-Filmes/getDiretor/:id', cors(), async function(request, response, next){
+
+    let idDiretor = request.params.id
+    let dadosDiretores = await controllerDiretor.getBuscarDiretor(idDiretor)
+
+    response.status(dadosDiretores.status_code)
+    response.json(dadosDiretores)
+})
+
+app.delete('/v2/ACME-Filmes/deleteDiretor/:id', cors(), async function(request, response, next){
+
+    let idDiretor = request.params.id
+    let dadosDiretores = await controllerDiretor.setExcluirDiretor(idDiretor)
+
+    response.status(dadosDiretores.status_code)
+    response.json(dadosDiretores)
+
+})
+
+app.post('/v2/ACME-Filmes/insertDiretor',cors(), bodyParserJSON, async function(request, response){
+    
+    let contentType = request.headers['content-type'];
+
+   // Recebe os dados encaminhados na requisição do body (JSON)
+   let dadosBody = request.body;
+
+   
+   // Encaminha os dados da requisição para a controller enviar para o banco de dados
+   let resultDados = await controllerDiretor.setInserirNovoDiretor(dadosBody, contentType);
+
+   response.status(resultDados.status_code);
+   response.json(resultDados);
 })
 
 app.listen('8080', function(){

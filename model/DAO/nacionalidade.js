@@ -42,7 +42,23 @@ const selectByIdNacionalidade = async function(id){
     }
 }
 
+const selectByIdNacionalidadeDiretor = async function(id){
+    try {
+        let sql=`select tbl_nacionalidade.id, tbl_nacionalidade.nome from tbl_diretor_nacionalidade
+        join tbl_nacionalidade on tbl_diretor_nacionalidade.id_nacionalidade = tbl_nacionalidade.id
+        join tbl_diretor on tbl_diretor_nacionalidade.id_diretor = tbl_diretor.id
+        where tbl_diretor.id = ${id}`
+
+        let rsNacionalidade = await prisma.$queryRawUnsafe(sql)
+
+        return rsNacionalidade
+    } catch(error) {
+        return false
+    }
+}
+
 module.exports = {
     selectAllNacionalidades,
-    selectByIdNacionalidade
+    selectByIdNacionalidade,
+    selectByIdNacionalidadeDiretor
 }

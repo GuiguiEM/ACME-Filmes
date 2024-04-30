@@ -13,7 +13,7 @@ const filmesDAO = require('../model/DAO/filme')
 
 // Função para inserir um novo filme
 const setInserirNovoFilme = async function(dadosFilme, content) {
-    console.log('oi')
+    
     try {
         if (String(content).toLowerCase() == 'application/json') {
 

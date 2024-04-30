@@ -28,11 +28,11 @@ const selectAllSexos = async function(){
     }
 }
 
-const selectByIdSexo = async function(){
+const selectByIdSexo = async function(id){
 
     try{
 
-        let sql = `select * from tbl_sexo where id = where id = ${id}`;
+        let sql = `select * from tbl_sexo where id = ${id}`;
 
         let rsSexo = await prisma.$queryRawUnsafe(sql);
 
@@ -41,4 +41,9 @@ const selectByIdSexo = async function(){
     }catch(error){
         return false
     }
+}
+
+module.exports = {
+    selectAllSexos,
+    selectByIdSexo
 }
