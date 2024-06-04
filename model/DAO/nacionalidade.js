@@ -57,8 +57,31 @@ const selectByIdNacionalidadeDiretor = async function(id){
     }
 }
 
+const insertNacionalidadeDiretor = async function(dadosNacionalidadeDiretor){
+
+    try{
+
+        let sql = `select into tbl_diretor_nacionalidade(id_diretor, id_nacionalidade
+            )values(
+                '${dadosNacionalidadeDiretor.id_diretor}',
+                '${dadosNacionalidadeDiretor.id_nacionalidade}'
+            )`
+
+            let result = await prisma.$executeRawUnsafe(sql);
+
+            if(result)
+                return true;
+            else
+                return false;
+
+    }catch(error){
+        return false;
+    }
+}
+
 module.exports = {
     selectAllNacionalidades,
     selectByIdNacionalidade,
-    selectByIdNacionalidadeDiretor
+    selectByIdNacionalidadeDiretor,
+    insertNacionalidadeDiretor
 }

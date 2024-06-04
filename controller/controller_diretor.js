@@ -103,7 +103,7 @@ const setExcluirDiretor = async function(id){
     }
 }
 
-const setInserirNovoDiretor = async (dadosDiretores, contentType) => {
+const setInserirNovoDiretor = async function(dadosDiretores, contentType){
 
     try{
 
@@ -117,12 +117,10 @@ const setInserirNovoDiretor = async (dadosDiretores, contentType) => {
 
     // Validação de campos obrigatórios e consistência de dados
     if( dadosDiretores.nome == ''                       || dadosDiretores.nome == undefined              || dadosDiretores.nome.length > 150              ||
-        dadosDiretores.data_nascimento == ''            || dadosDiretores.data_nascimento == undefined            || dadosDiretores.data_nascimento.length > 10       || 
-        dadosDiretores.foto == ''                       || dadosDiretores.foto == undefined           ||dadosDiretores.foto.length > 65000           || 
+        dadosDiretores.data_nascimento == ''            || dadosDiretores.data_nascimento == undefined            || dadosDiretores.data_nascimento.length != 10       || 
+        dadosDiretores.foto == ''                       || dadosDiretores.foto == undefined           ||dadosDiretores.foto.length > 200           || 
         dadosDiretores.biografia == ''                  || dadosDiretores.biografia == undefined   ||dadosDiretores.biografia.length > 65000   || 
-        dadosDiretores.id_sexo == ''                    || dadosDiretores.id_sexo == undefined     ||    dadosDiretores.id_sexo.length > 1        || 
-        dadosDiretores.id_nacionalidade == ''           || dadosDiretores.id_nacionalidade == undefined     ||    dadosDiretores.id_nacionalidade.length > 1         
-        
+        dadosDiretores.id_sexo == ''                    || dadosDiretores.id_sexo == undefined     ||    dadosDiretores.id_sexo > 1        
     ){
         return message.ERROR_REQUIRED_FIELDS // 400 Campos obrigatórios / Incorretos
      }else{
@@ -143,16 +141,16 @@ const setInserirNovoDiretor = async (dadosDiretores, contentType) => {
 
         // Encaminha os dados para o DAO, inserir no Banco de Dados
         let novoDiretor = await diretorDAO.insertDiretor(dadosDiretores);
-
-        let idSelect = await diretorDAO.selectByIdDiretor();
-
-        dadosDiretores.id = Number (idSelect[0].id)
         
         // Validação de inserção de dados no banco de dados 
-        if(novoDiretor){
+        if (novoDiretor) {
+            // Array para armazenar os resultados da inserção das nacionalidades
 
-           
-            // Cria o padrão de JSOn para o retorno dos dados criados no banco de dados
+           // for each nacionalidade (item)
+                //idNacionalidade = item
+                // let novoDiretor = await diretorDAO.insertDiretorNacionalidade(idDiretor, idNacionalidade);
+
+            // // Cria o padrão de JSOn para o retorno dos dados criados no banco de dados
             resultDadosDiretor.status = message.SUCCESS_CREATED_ITEM.status;
             resultDadosDiretor.status_code = message.SUCCESS_CREATED_ITEM.status_code;
             resultDadosDiretor.message = message.SUCCESS_CREATED_ITEM.message;
@@ -161,8 +159,6 @@ const setInserirNovoDiretor = async (dadosDiretores, contentType) => {
             return resultDadosDiretor; // 201
         } else{
             return message.ERROR_INTERNAL_SERVER_DB; // 500 Erro na camada do DAO (Banco)
-            
-    
          }
        }
     }else{
@@ -175,10 +171,69 @@ const setInserirNovoDiretor = async (dadosDiretores, contentType) => {
      
 }
 
+const setAtualizarDiretor = async function(id, dadosDiretores, contentType){
+
+    try{
+
+        if(String(contentType).toLowerCase() == 'application/json'){
+
+            if( dadosDiretores.nome == ''                       || dadosDiretores.nome == undefined              || dadosDiretores.nome.length > 150              ||
+            dadosDiretores.data_nascimento == ''            || dadosDiretores.data_nascimento == undefined            || dadosDiretores.data_nascimento.length != 10       || 
+            dadosDiretores.foto == ''                       || dadosDiretores.foto == undefined           ||dadosDiretores.foto.length > 200           || 
+            dadosDiretores.biografia == ''                  || dadosDiretores.biografia == undefined   ||dadosDiretores.biografia.length > 65000   || 
+            dadosDiretores.id_sexo == ''                    || dadosDiretores.id_sexo == undefined     ||    dadosDiretores.id_sexo > 1        
+        ){
+            return message.ERROR_REQUIRED_FIELDS // 400 Campos obrigatórios / Incorretos
+         }else{
+            // Variável para validar se poderemos chamar o DAO para inserir os dados
+           
+            // Validação de digitação para a data de relançamento que não é campo obrigatório
+            if( dadosDiretores.data_falecimento != null &&
+                dadosDiretores.data_falecimento != undefined && 
+                dadosDiretores.data_falecimento != '' &&
+                dadosDiretores.data_falecimento.length > 10
+            ){
+             
+                return message.ERROR_REQUIRED_FIELDS
+    
+            }
+
+            const idDiretor = id
+            const diretorAtualizado = await diretorDAO.updateDiretor(dadosDiretores)
+
+            if (diretorAtualizado) {
+                // Array para armazenar os resultados da inserção das nacionalidades
+    
+               // for each nacionalidade (item)
+                    //idNacionalidade = item
+                    // let novoDiretor = await diretorDAO.insertDiretorNacionalidade(idDiretor, idNacionalidade);
+    
+                // // Cria o padrão de JSOn para o retorno dos dados criados no banco de dados
+                resultDadosDiretor.status = message.SUCCESS_UPDATED_ITEM.status;
+                resultDadosDiretor.status_code = message.SUCCESS_UPDATED_ITEM.status_code;
+                resultDadosDiretor.message = message.SUCCESS_UPDATED_ITEM.message;
+                resultDadosDiretor.idDiretorAtualizado = idDiretor
+                resultDadosDiretor.diretores = dadosDiretores;
+
+                return resultDadosDiretor
+            }else{
+                return message.ERROR_INTERNAL_SERVER_DB
+            }
+        }
+    }else{
+        return message.ERROR_CONTENT_TYPE
+    }
+}catch(error){
+    console.log(error)
+    return message.ERROR_INTERNAL_SERVER
+}
+}
+
 
 module.exports = {
     getListarDiretores,
     getBuscarDiretor,
     setExcluirDiretor,
-    setInserirNovoDiretor
+    setInserirNovoDiretor,
+    setAtualizarDiretor
 }

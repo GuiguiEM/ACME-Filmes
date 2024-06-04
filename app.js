@@ -74,6 +74,16 @@ app.get('/v2/ACME-Filmes/filmes', cors(), async function(request, response, next
     }
 })
 
+app.get('/v2/ACME-Filmes/getFilmes/:id', cors(), async function(request, response, next){
+
+    let idFilme = request.params.id;
+
+    let dadosFilme = await controllerFilmes.getBuscarFilme(idFilme)
+
+    response.status(dadosFilme.status_code)
+    response.json(dadosFilme)
+})
+
 app.post('/v2/ACME-Filmes/filme', cors(), bodyParser.json(), async function(request, response, next){
 
     let contentType = request.headers['content-type']
@@ -264,21 +274,31 @@ app.delete('/v2/ACME-Filmes/deleteDiretor/:id', cors(), async function(request, 
 
 })
 
-app.post('/v2/ACME-Filmes/insertDiretor',cors(), bodyParserJSON, async function(request, response){
+app.post('/v2/ACME-Filmes/insertDiretor',cors(), bodyParser.json(), async function(request, response, next){
     
     let contentType = request.headers['content-type'];
 
-   // Recebe os dados encaminhados na requisição do body (JSON)
    let dadosBody = request.body;
 
-   
-   // Encaminha os dados da requisição para a controller enviar para o banco de dados
-   let resultDados = await controllerDiretor.setInserirNovoDiretor(dadosBody, contentType);
+    let resultDados = await controllerDiretor.setInserirNovoDiretor(dadosBody, contentType);
 
    response.status(resultDados.status_code);
    response.json(resultDados);
 })
 
-app.listen('8080', function(){
+app.put('/v2/ACME-Filmes/updateDiretor/:id', cors(), bodyParser.json(), async function(request, response, next){
+
+    const id = request.params.id
+
+    let contentType = request.headers['content-type']
+    let novosDados = request.body
+
+    let result = await controllerDiretor.setAtualizarDiretor(id, novosDados, contentType)
+
+    response.status(result.status_code)
+    response.json(result)
+})
+
+app.listen('3030', function(){
     console.log('API FUNCIONANDO')
 })

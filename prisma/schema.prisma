@@ -7,13 +7,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model tbl_filme {
-  id                Int       @id @unique(map: "id") @default(autoincrement())
-  nome              String    @db.VarChar(80)
-  sinopse           String    @db.Text
-  duracao           DateTime  @db.Time(0)
-  data_lancamento   DateTime  @db.Date
-  data_relancamento DateTime? @db.Date
-  foto_capa         String    @db.VarChar(300)
-  valor_unitario    Float?    @db.Float
+model tbl_atores {
+  id               Int       @id @default(autoincrement())
+  nome             String    @db.VarChar(80)
+  data_nascimento  DateTime  @db.Date
+  foto             String    @db.VarChar(255)
+  data_falecimento DateTime? @db.Date
+  biografia        String?   @db.Text
+}
+
+model tbl_classificacao {
+  id        Int     @id @unique(map: "id") @default(autoincrement())
+  categoria String  @db.VarChar(80)
+  descricao String? @db.Text
+  simbolo   String  @db.Text
+}
+
+model tbl_diretores {
+  id               Int       @id @default(autoincrement())
+  nome             String    @db.VarChar(80)
+  data_nascimento  DateTime  @db.Date
+  foto             String    @db.VarChar(255)
+  data_falecimento DateTime? @db.Date
+  biografia        String?   @db.Text
 }

@@ -83,7 +83,7 @@ const setAtualizarClassificacao = async function(id, dadosClassificacao, content
                     classificacaoAtualizadaJson.status_code = message.SUCCESS_UPDATED_ITEM.status_code,
                     classificacaoAtualizadaJson.message = message.SUCCESS_UPDATED_ITEM.message,
                     classificacaoAtualizadaJson.idClassificacaoAtualizada = idClassificacao,
-                    novaClassificacaoJson = dadosClassificacao
+                    classificacaoAtualizadaJson.classificacao = dadosClassificacao
 
                     return classificacaoAtualizadaJson
                 }else{

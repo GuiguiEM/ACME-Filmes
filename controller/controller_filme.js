@@ -129,9 +129,8 @@ const setExcluirFilme = async function(id){
             return message.ERROR_NOT_FOUND
 
         } else {
-            
             if(dadosFilme)
-                return message.SUCESS_DELETED_ITEM 
+                return message.SUCCESS_DELETED_ITEM 
             else
                 return message.ERROR_INTERNAL_SERVER_DB
 

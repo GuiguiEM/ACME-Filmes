@@ -76,7 +76,7 @@ const setAtualizarGenero = async function(id, dadosGenero, content) {
                     generoAtualizadoJson.status_code = message.SUCCESS_UPDATED_ITEM.status_code,
                     generoAtualizadoJson.message = message.SUCCESS_UPDATED_ITEM.message,
                     generoAtualizadoJson.idGeneroAtualizado = idGenero,
-                    novoGeneroJson = dadosGenero
+                    generoAtualizadoJson.genero = dadosGenero
 
                     return generoAtualizadoJson
                 }else{
